@@ -1,0 +1,120 @@
+<!doctype html>
+<html lang="ru">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#090a0b" />
+    <meta name="description" content="Полноэкранный трекер накоплений на автомобиль" />
+    <title>Наша будущая тачка</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="styles.css?v=8" />
+  </head>
+  <body>
+    <main class="car-stage" aria-label="Трекер накоплений на автомобиль">
+      <img class="car-image car-image-blurred" src="assets/car-hero.png" alt="Тёмный спортивный кроссовер в студии" />
+      <img class="car-image car-image-sharp" src="assets/car-hero.png" alt="" aria-hidden="true" />
+      <div class="scene-shade" aria-hidden="true"></div>
+      <div class="reveal-line" id="revealLine" aria-hidden="true"><span id="revealPercent">0%</span></div>
+
+      <aside class="money-hud" aria-label="Прогресс накоплений" aria-live="polite">
+        <span class="money-label">Накоплено</span>
+        <button class="saved-amount" id="openEditSavedButton" type="button" aria-label="Изменить текущие накопления">
+          <span id="savedAmount">0 zł</span>
+        </button>
+        <div class="money-meta">
+          <span>Стоимость авто</span>
+          <strong id="goalDisplay">100 000 zł</strong>
+          <span class="progress-pill" id="progressPercent">0%</span>
+        </div>
+      </aside>
+
+      <p class="scene-title">Наша будущая <strong>тачка</strong></p>
+
+      <button class="floating-action add-action" id="openDepositButton" type="button" aria-label="Добавить накопления">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14" /></svg>
+      </button>
+
+      <button class="floating-action settings-action" id="openSettingsButton" type="button" aria-label="Изменить стоимость автомобиля">
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M12 15.25A3.25 3.25 0 1 0 12 8.75a3.25 3.25 0 0 0 0 6.5Z" />
+          <path d="m19 13.2 1.35 1.05-1.8 3.12-1.58-.65a7.8 7.8 0 0 1-2.27 1.32L14.48 20h-3.6l-.23-1.96a7.8 7.8 0 0 1-2.27-1.32l-1.58.65L5 14.25l1.35-1.05a7.8 7.8 0 0 1 0-2.4L5 9.75l1.8-3.12 1.58.65a7.8 7.8 0 0 1 2.27-1.32L10.88 4h3.6l.22 1.96a7.8 7.8 0 0 1 2.27 1.32l1.58-.65 1.8 3.12L19 10.8a7.8 7.8 0 0 1 0 2.4Z" />
+        </svg>
+      </button>
+    </main>
+
+    <div class="dialog-scrim" id="dialogScrim" hidden>
+      <section class="soft-dialog" id="depositDialog" role="dialog" aria-modal="true" aria-labelledby="depositDialogTitle" hidden>
+        <div class="dialog-heading">
+          <div><p class="eyebrow">ПОПОЛНЕНИЕ</p><h2 id="depositDialogTitle">Добавить накопления</h2></div>
+          <button class="dialog-close" data-close-dialog type="button" aria-label="Закрыть">×</button>
+        </div>
+        <form id="depositForm" novalidate>
+          <label class="money-input" for="depositAmount">
+            <span>Сумма пополнения</span>
+            <span class="input-row">
+              <input id="depositAmount" name="depositAmount" type="text" inputmode="numeric" autocomplete="off" placeholder="1 000" aria-describedby="depositError" />
+              <b>zł</b>
+            </span>
+          </label>
+          <p class="field-error" id="depositError" role="alert"></p>
+          <div class="quick-amounts" aria-label="Быстрый выбор суммы">
+            <button type="button" data-amount="500">+ 500</button>
+            <button type="button" data-amount="1000">+ 1 000</button>
+            <button type="button" data-amount="2500">+ 2 500</button>
+            <button type="button" data-amount="5000">+ 5 000</button>
+          </div>
+          <button class="primary-button" type="submit">Добавить</button>
+        </form>
+        <div class="exact-value-row">
+          <div><span>Текущая сумма</span><strong id="currentSavedValue">0 zł</strong></div>
+          <button id="editFromDepositButton" type="button">Изменить</button>
+        </div>
+      </section>
+
+      <section class="soft-dialog" id="settingsDialog" role="dialog" aria-modal="true" aria-labelledby="settingsDialogTitle" hidden>
+        <div class="dialog-heading">
+          <div><p class="eyebrow">НАСТРОЙКИ</p><h2 id="settingsDialogTitle">Стоимость автомобиля</h2></div>
+          <button class="dialog-close" data-close-dialog type="button" aria-label="Закрыть">×</button>
+        </div>
+        <form id="goalForm" novalidate>
+          <label class="money-input" for="goalAmount">
+            <span>Полная стоимость</span>
+            <span class="input-row">
+              <input id="goalAmount" name="goalAmount" type="text" inputmode="numeric" autocomplete="off" aria-describedby="goalError" />
+              <b>zł</b>
+            </span>
+          </label>
+          <p class="field-error" id="goalError" role="alert"></p>
+          <button class="primary-button" type="submit">Сохранить стоимость</button>
+        </form>
+      </section>
+
+      <section class="soft-dialog" id="editSavedDialog" role="dialog" aria-modal="true" aria-labelledby="editSavedDialogTitle" hidden>
+        <div class="dialog-heading">
+          <div><p class="eyebrow">КОРРЕКТИРОВКА</p><h2 id="editSavedDialogTitle">Текущие накопления</h2></div>
+          <button class="dialog-close" data-close-dialog type="button" aria-label="Закрыть">×</button>
+        </div>
+        <form id="editSavedForm" novalidate>
+          <label class="money-input" for="editSavedInput">
+            <span>Накоплено сейчас</span>
+            <span class="input-row">
+              <input id="editSavedInput" type="text" inputmode="numeric" autocomplete="off" aria-describedby="editSavedError" />
+              <b>zł</b>
+            </span>
+          </label>
+          <p class="field-error" id="editSavedError" role="alert"></p>
+          <button class="primary-button" type="submit">Сохранить сумму</button>
+        </form>
+      </section>
+    </div>
+
+    <div class="toast" id="toast" role="status" aria-live="polite">
+      <span class="toast-icon"><svg viewBox="0 0 24 24"><path d="m5 12 4 4L19 6" /></svg></span>
+      <span id="toastText">Накопления обновлены</span>
+    </div>
+
+    <script src="app.js?v=7"></script>
+  </body>
+</html>
